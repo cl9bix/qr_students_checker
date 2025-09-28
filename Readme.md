@@ -28,38 +28,44 @@ Key features:
 
 ---
 
-## Database Schema
+## API Endpoints
 
-```mermaid
-erDiagram
-    USERS {
-        uuid id PK
-        string name
-        string email
-        string uni_id
-    }
+### Teacher: Get Current QR
+GET /teacher/sessions/{session_id}/qr
 
-    SESSIONS {
-        uuid id PK
-        uuid course_id
-        uuid room_id
-        timestamp starts_at
-        timestamp ends_at
-        uuid created_by FK -> USERS.id
-    }
+### Teacher: WebSocket Updates
+WS /teacher/sessions/{session_id}/ws
 
-    ATTENDANCE {
-        uuid id PK
-        uuid session_id FK -> SESSIONS.id
-        uuid student_id FK -> USERS.id
-        timestamp scanned_at
-        int counter
-        string ip
-        string device_fp
-        string status  // ok, expired, duplicate, invalid
-    }
+### Student: Scan QR
+POST /scan
 
-    USERS ||--o{ ATTENDANCE : "has"
-    SESSIONS ||--o{ ATTENDANCE : "records"
-```
+### Student: View Attendance
+GET /student/attendance/{student_id}
+
+---
+
+## Security
+- One-time signed QR tokens (HMAC-SHA256)
+- Expiration window (5–10 seconds)
+- Immediate rotation after the first valid scan
+- No personal data in QR payloads
+- GDPR-compliant: only minimal identifiers stored
+
+---
+
+## MVP Roadmap
+1. MVP: Teacher QR page + Student scan + DB records  
+2. WebSocket auto-rotation & counter logic  
+3. Student dashboard with statistics  
+4. Export tools for teachers (CSV/PDF)  
+5. Admin/faculty analytics panel  
+
+---
+
+## Testing Scenarios
+- Multiple students scanning at the same second  
+- QR screenshot forwarding → rejected as expired/used  
+- Duplicate scan by the same student  
+- Expired payload handling  
+- Load test with 100+ scans in under 5 seconds  
 
