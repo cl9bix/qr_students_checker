@@ -61,3 +61,5 @@ erDiagram
 
     USERS ||--o{ ATTENDANCE : "has"
     SESSIONS ||--o{ ATTENDANCE : "records"
+```
+
